@@ -75,6 +75,15 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
     return entry;
 }
 
+
+// Custom file system file system type
+static struct file_system_type custom_fs_type = {
+    .name = "customfs",
+    .mount = custom_fs_mount,
+    .kill_sb = kill_litter_super,
+};
+
+
 // Initialize the custom file system module
 static int __init custom_fs_init(void)
 {
@@ -98,17 +107,6 @@ static void __exit custom_fs_exit(void)
 
     pr_info("Custom file system module unloaded\n");
 }
-
-
-
-
-
-// Custom file system file system type
-static struct file_system_type custom_fs_type = {
-    .name = "customfs",
-    .mount = custom_fs_mount,
-    .kill_sb = kill_litter_super,
-};
 
 
 
