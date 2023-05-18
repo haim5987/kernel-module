@@ -5,6 +5,56 @@
 
 #define FILE_SYSTEM_MAGIC 0x12345678
 
+
+// Mount the custom file system
+static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
+                                      int flags, const char *dev_name, void *data)
+{
+    struct dentry *entry;
+    struct custom_fs_data *fs_data;
+
+    entry = mount_nodev(fs_type, flags, data, custom_fs_fill_super);
+    if (IS_ERR(entry))
+        return entry;
+
+    fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
+    if (!fs_data) {
+        pr_err("Failed to allocate memory for custom_fs_data\n");
+        return ERR_PTR(-ENOMEM);
+    }
+
+    fs_data->sb = entry->d_sb->s_fs_info;
+    entry->d_sb->s_fs_info = fs_data;
+
+    return entry;
+}
+
+// Initialize the custom file system module
+static int __init custom_fs_init(void)
+{
+    int ret;
+
+    ret = register_filesystem(&custom_fs_type);
+    if (ret != 0) {
+        pr_err("Failed to register custom file system\n");
+        return ret;
+    }
+
+    pr_info("Custom file system module loaded\n");
+
+    return 0;
+}
+
+// Clean up the custom file system module
+static void __exit custom_fs_exit(void)
+{
+    unregister_filesystem(&custom_fs_type);
+
+    pr_info("Custom file system module unloaded\n");
+}
+
+
+
 // Structure to hold custom file system data
 struct custom_fs_data {
     struct super_block *sb;
@@ -58,52 +108,6 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
     return 0;
 }
 
-// Mount the custom file system
-static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
-                                      int flags, const char *dev_name, void *data)
-{
-    struct dentry *entry;
-    struct custom_fs_data *fs_data;
-
-    entry = mount_nodev(fs_type, flags, data, custom_fs_fill_super);
-    if (IS_ERR(entry))
-        return entry;
-
-    fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
-    if (!fs_data) {
-        pr_err("Failed to allocate memory for custom_fs_data\n");
-        return ERR_PTR(-ENOMEM);
-    }
-
-    fs_data->sb = entry->d_sb->s_fs_info;
-    entry->d_sb->s_fs_info = fs_data;
-
-    return entry;
-}
-
-// Initialize the custom file system module
-static int __init custom_fs_init(void)
-{
-    int ret;
-
-    ret = register_filesystem(&custom_fs_type);
-    if (ret != 0) {
-        pr_err("Failed to register custom file system\n");
-        return ret;
-    }
-
-    pr_info("Custom file system module loaded\n");
-
-    return 0;
-}
-
-// Clean up the custom file system module
-static void __exit custom_fs_exit(void)
-{
-    unregister_filesystem(&custom_fs_type);
-
-    pr_info("Custom file system module unloaded\n");
-}
 
 module_init(custom_fs_init);
 module_exit(custom_fs_exit);
