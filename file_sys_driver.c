@@ -17,6 +17,35 @@ static struct super_operations myfs_sb_ops = {
 };
 
 
+struct inode *myfs_get_inode(struct super_block *sb, int mode)
+{
+    struct inode *inode = new_inode(sb);
+    if (!inode)
+        return NULL;
+
+    inode->i_mode = mode;
+    inode->i_uid.val = current_uid().val;
+    inode->i_gid.val = current_gid().val;
+    inode->i_blocks = 0;
+    inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+    switch (mode & S_IFMT) {
+        case S_IFREG:
+            inode->i_op = &myfs_file_inode_operations;
+            inode->i_fop = &myfs_file_operations;
+            break;
+        case S_IFDIR:
+            inode->i_op = &myfs_dir_inode_operations;
+            inode->i_fop = &myfs_dir_operations;
+            inc_nlink(inode);
+            break;
+        default:
+            init_special_inode(inode, mode, 0);
+            break;
+    }
+
+    return inode;
+}
+
 static int myfs_fill_super(struct super_block *sb, void *data, int silent)
 {
     // Perform any necessary initialization for your file system's superblock
