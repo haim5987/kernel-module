@@ -16,13 +16,46 @@ static struct super_operations myfs_sb_ops = {
     //               .drop_inode = your_drop_inode_function,
 };
 
+
+static int myfs_fill_super(struct super_block *sb, void *data, int silent)
+{
+    // Perform any necessary initialization for your file system's superblock
+    // For example:
+    
+    // Set the file system magic number
+    sb->s_magic = MYFS_MAGIC_NUMBER;
+
+    // Set the file system operations
+    sb->s_op = &myfs_sb_ops;
+
+    // Set up the root inode
+    struct inode *root_inode = NULL;
+    root_inode = myfs_get_inode(sb, S_IFDIR | S_IRWXU);
+    if (!root_inode)
+    {
+        printk(KERN_ERR "Failed to allocate root inode.\n");
+        return -ENOMEM;
+    }
+
+    // Set the root inode as the root of the file system
+    sb->s_root = d_make_root(root_inode);
+    if (!sb->s_root)
+    {
+        printk(KERN_ERR "Failed to create root dentry.\n");
+        iput(root_inode);
+        return -ENOMEM;
+    }
+
+    return 0;
+}
+
 static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
     printk(KERN_INFO "Mount successful!\n");
     
     struct dentry *ret;
 
     // Create the root dentry for your file system
-    ret = mount_bdev(fs_type, flags, dev_name, data, simple_fill_super);
+    ret = mount_bdev(fs_type, flags, dev_name, data, myfs_fill_super);
     if (IS_ERR(ret))
         printk(KERN_ERR "Failed to mount the file system.\n");
     else
