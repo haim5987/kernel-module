@@ -94,12 +94,12 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
         return entry;
     }
 
-    // Allocate memory for custom file system data
-    fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
-    if (!fs_data) {
-        pr_err("Failed to allocate memory for custom_fs_data\n");
-        goto out_fail;
-    }
+    // // Allocate memory for custom file system data
+    // fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
+    // if (!fs_data) {
+    //     pr_err("Failed to allocate memory for custom_fs_data\n");
+    //     goto out_fail;
+    // }
 
     // fs_data->sb = entry->d_sb->s_fs_info;
     // entry->d_sb->s_fs_info = fs_data;
