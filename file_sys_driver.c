@@ -21,7 +21,7 @@ static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int
     int error = 0;
 
     // Get the superblock from the file_system_type
-    sb = mount_nodev(fs_type, flags, data);
+    sb = mount_bdev(fs_type, NULL, data);
     if (IS_ERR(sb))
     {
         error = PTR_ERR(sb);
@@ -35,6 +35,7 @@ static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int
         error = -ENOMEM;
         goto out_sb;
     }
+
 
 
 out_file:
