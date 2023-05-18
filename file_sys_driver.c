@@ -19,7 +19,7 @@ static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int
     int error = 0;
 
     // Create the root inode
-    root_inode = new_inode(fs_type->s_magic);
+    root_inode = new_inode(fs_type->i_sb);
     if (!root_inode) {
         error = -ENOMEM;
         goto out;
