@@ -1,4 +1,4 @@
-obj-m += new_sys_call.o
+obj-m += file_sys_driver.o
 
 # Path to the kernel source code
 KDIR := /lib/modules/$(shell uname -r)/build
