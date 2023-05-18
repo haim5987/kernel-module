@@ -10,25 +10,16 @@ MODULE_DESCRIPTION("Read-only Hello World file system driver");
 
 
 static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
-    struct dentry *root_dentry = NULL;
+    // struct dentry *root_dentry = NULL;
     printk(KERN_INFO "Mount successful!\n");
-    return root_dentry;
+    return NULL;
 }
 
-static int hello_mount(struct file_system_type *fs_type, int flags,
-                       const char *dev_name, void *data)
-{
-    // Print a success message
-    printk(KERN_INFO "Hello file system mounted successfully!\n");
-
-    // Return 0 to indicate success
-    return 0;
-}
 
 static struct file_system_type read_only_fs_type = {
     .name = "hello",
     .kill_sb = kill_litter_super,
-    .mount = hello_mount,
+    .mount = hello_mount_callback,
 };
 
 static int __init read_only_fs_init(void) {
