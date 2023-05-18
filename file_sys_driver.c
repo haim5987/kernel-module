@@ -21,7 +21,7 @@ static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int
     int error = 0;
 
     // Get the superblock from the file_system_type
-    sb = get_sb_nodev(fs_type, flags, dev_name, data);
+    sb = mount_nodev(fs_type, flags, data);
     if (IS_ERR(sb))
     {
         error = PTR_ERR(sb);
