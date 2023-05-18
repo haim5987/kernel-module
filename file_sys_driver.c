@@ -10,9 +10,31 @@ MODULE_DESCRIPTION("Read-only Hello World file system driver");
 
 
 static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
-    // struct dentry *root_dentry = NULL;
     printk(KERN_INFO "Mount successful!\n");
-    return NULL;
+    
+    struct dentry *root_dentry = NULL;
+    struct inode *root_inode = NULL;
+    struct dentry *file_dentry = NULL;
+    struct file *file = NULL;
+    int error = 0;
+
+    // Create the root inode
+    root_inode = new_inode(fs_type->s_magic);
+    if (!root_inode) {
+        error = -ENOMEM;
+        goto out;
+    }
+
+
+    out:
+    if (file)
+        fput(file);
+    if (file_dentry)
+        dput(file_dentry);
+    if (root_dentry)
+        dput(root_dentry);
+
+    return error;
 }
 
 
