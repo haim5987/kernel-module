@@ -9,13 +9,20 @@ MODULE_AUTHOR("Haim Kasel");
 MODULE_DESCRIPTION("Read-only Hello World file system driver");
 
 
+// Your file system superblock operations
+static struct super_operations myfs_sb_ops = {
+    // Fill in the necessary superblock operations
+    // For example, .statfs = your_statfs_function,
+    //               .drop_inode = your_drop_inode_function,
+};
+
 static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
     printk(KERN_INFO "Mount successful!\n");
     
     struct dentry *ret;
 
     // Create the root dentry for your file system
-    ret = mount_bdev(fs_type, flags, dev_name, data, myfs_fill_super);
+    ret = mount_bdev(fs_type, flags, dev_name, data, simple_fill_super);
     if (IS_ERR(ret))
         printk(KERN_ERR "Failed to mount the file system.\n");
     else
