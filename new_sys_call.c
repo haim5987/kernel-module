@@ -23,5 +23,6 @@ static void __exit mysyscall_exit(void)
     /* Cleanup code */
 }
 
+
 module_init(mysyscall_init);
 module_exit(mysyscall_exit);
