@@ -6,6 +6,31 @@
 #define FILE_SYSTEM_MAGIC 0x12345678
 
 
+// Initialize custom file system superblock
+static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
+{
+    struct inode *root_inode;
+
+    sb->s_magic = FILE_SYSTEM_MAGIC;
+    sb->s_op = &custom_fs_super_operations;
+
+    root_inode = new_inode(sb);
+    if (!root_inode)
+        return -ENOMEM;
+
+    root_inode->i_ino = 1;
+    root_inode->i_sb = sb;
+    root_inode->i_op = &custom_fs_inode_operations;
+    root_inode->i_fop = &custom_fs_file_operations;
+    root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime =  current_time(root_inode);;
+
+    sb->s_root = d_make_root(root_inode);
+    if (!sb->s_root)
+        return -ENOMEM;
+
+    return 0;
+}
+
 // Mount the custom file system
 static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
                                       int flags, const char *dev_name, void *data)
@@ -83,30 +108,7 @@ static struct file_system_type custom_fs_type = {
     .kill_sb = kill_litter_super,
 };
 
-// Initialize custom file system superblock
-static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
-{
-    struct inode *root_inode;
 
-    sb->s_magic = FILE_SYSTEM_MAGIC;
-    sb->s_op = &custom_fs_super_operations;
-
-    root_inode = new_inode(sb);
-    if (!root_inode)
-        return -ENOMEM;
-
-    root_inode->i_ino = 1;
-    root_inode->i_sb = sb;
-    root_inode->i_op = &custom_fs_inode_operations;
-    root_inode->i_fop = &custom_fs_file_operations;
-    root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime =  current_time(root_inode);;
-
-    sb->s_root = d_make_root(root_inode);
-    if (!sb->s_root)
-        return -ENOMEM;
-
-    return 0;
-}
 
 
 module_init(custom_fs_init);
