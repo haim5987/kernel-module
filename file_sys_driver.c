@@ -19,32 +19,32 @@ static struct super_operations myfs_sb_ops = {
 
 static int myfs_fill_super(struct super_block *sb, void *data, int silent)
 {
-    // Perform any necessary initialization for your file system's superblock
-    // For example:
+    // // Perform any necessary initialization for your file system's superblock
+    // // For example:
     
-    // Set the file system magic number
-    sb->s_magic = MYFS_MAGIC_NUMBER;
+    // // Set the file system magic number
+    // sb->s_magic = MYFS_MAGIC_NUMBER;
 
-    // Set the file system operations
-    sb->s_op = &myfs_sb_ops;
+    // // Set the file system operations
+    // sb->s_op = &myfs_sb_ops;
 
-    // Set up the root inode
-    struct inode *root_inode = NULL;
-    root_inode = myfs_get_inode(sb, S_IFDIR | S_IRWXU);
-    if (!root_inode)
-    {
-        printk(KERN_ERR "Failed to allocate root inode.\n");
-        return -ENOMEM;
-    }
+    // // Set up the root inode
+    // struct inode *root_inode = NULL;
+    // root_inode = myfs_get_inode(sb, S_IFDIR | S_IRWXU);
+    // if (!root_inode)
+    // {
+    //     printk(KERN_ERR "Failed to allocate root inode.\n");
+    //     return -ENOMEM;
+    // }
 
-    // Set the root inode as the root of the file system
-    sb->s_root = d_make_root(root_inode);
-    if (!sb->s_root)
-    {
-        printk(KERN_ERR "Failed to create root dentry.\n");
-        iput(root_inode);
-        return -ENOMEM;
-    }
+    // // Set the root inode as the root of the file system
+    // sb->s_root = d_make_root(root_inode);
+    // if (!sb->s_root)
+    // {
+    //     printk(KERN_ERR "Failed to create root dentry.\n");
+    //     iput(root_inode);
+    //     return -ENOMEM;
+    // }
 
     return 0;
 }
