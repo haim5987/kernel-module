@@ -52,27 +52,86 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
     return 0;
 }
 
+// // Mount the custom file system
+// static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
+//                                       int flags, const char *dev_name, void *data)
+// {
+//     struct dentry *entry;
+//     struct custom_fs_data *fs_data;
+
+//     entry = mount_nodev(fs_type, flags, data, custom_fs_fill_super);
+//     if (IS_ERR(entry))
+//         return entry;
+
+//     fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
+//     if (!fs_data) {
+//         pr_err("Failed to allocate memory for custom_fs_data\n");
+//         return ERR_PTR(-ENOMEM);
+//     }
+
+//     fs_data->sb = entry->d_sb->s_fs_info;
+//     entry->d_sb->s_fs_info = fs_data;
+
+//     return entry;
+// }
+
 // Mount the custom file system
 static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
                                       int flags, const char *dev_name, void *data)
 {
     struct dentry *entry;
     struct custom_fs_data *fs_data;
+    struct dentry *file_dentry;
+    struct inode *file_inode;
+    struct qstr file_name;
 
+    // Attempt to mount the file system
     entry = mount_nodev(fs_type, flags, data, custom_fs_fill_super);
-    if (IS_ERR(entry))
+    if (IS_ERR(entry)) {
+        pr_err("Failed to mount the custom file system\n");
         return entry;
+    }
 
+    // Allocate memory for custom file system data
     fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
     if (!fs_data) {
         pr_err("Failed to allocate memory for custom_fs_data\n");
-        return ERR_PTR(-ENOMEM);
+        goto out_fail;
     }
 
     fs_data->sb = entry->d_sb->s_fs_info;
     entry->d_sb->s_fs_info = fs_data;
 
+    // Create the "hello.txt" file
+    file_name.name = "hello.txt";
+    file_name.len = strlen(file_name.name);
+    file_name.hash = full_name_hash(file_name.name, file_name.len);
+    
+    file_dentry = d_alloc(entry, &file_name);
+    if (!file_dentry) {
+        pr_err("Failed to allocate dentry for hello.txt\n");
+        goto out_fail;
+    }
+
+    file_inode = custom_fs_get_inode(entry->d_sb, S_IFREG | 0644);
+    if (!file_inode) {
+        pr_err("Failed to allocate inode for hello.txt\n");
+        goto out_fail;
+    }
+
+    file_dentry->d_inode = file_inode;
+    file_dentry->d_op = &custom_fs_file_operations;
+    file_dentry->d_sb = entry->d_sb;
+
+    inc_nlink(file_inode);
+    d_instantiate(file_dentry, file_inode);
+
     return entry;
+
+out_fail:
+    // Cleanup on failure
+    deactivate_locked_super(entry->d_sb);
+    return ERR_PTR(-ENOMEM);
 }
 
 
@@ -107,8 +166,6 @@ static void __exit custom_fs_exit(void)
 
     pr_info("Custom file system module unloaded\n");
 }
-
-
 
 
 module_init(custom_fs_init);
