@@ -9,6 +9,11 @@ MODULE_AUTHOR("Haim Kasel");
 MODULE_DESCRIPTION("Read-only Hello World file system driver");
 
 
+static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
+     printk(KERN_INFO "Mount successful!\n");
+     return root_dentry;
+}
+
 static struct file_system_type read_only_fs_type = {
     .name = "hello",
     .kill_sb = kill_litter_super,
