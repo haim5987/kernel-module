@@ -5,6 +5,9 @@
 
 #define FILE_SYSTEM_MAGIC 0x12345678
 
+static const struct address_space_operations custom_fs_aops;
+static const struct inode_operations custom_fs_inode_operations;
+
 // Structure to hold custom file system data
 struct custom_fs_data {
     struct super_block *sb;
