@@ -101,8 +101,8 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
         goto out_fail;
     }
 
-    fs_data->sb = entry->d_sb->s_fs_info;
-    entry->d_sb->s_fs_info = fs_data;
+    // fs_data->sb = entry->d_sb->s_fs_info;
+    // entry->d_sb->s_fs_info = fs_data;
 
     // Create the "hello.txt" file
     // file_name.name = "hello.txt";
@@ -138,7 +138,7 @@ out_fail:
 
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
-    .name = "customfs2",
+    .name = "customfs",
     .mount = custom_fs_mount,
     .kill_sb = kill_litter_super,
 };
