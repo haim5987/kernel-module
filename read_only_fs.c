@@ -105,29 +105,29 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
     entry->d_sb->s_fs_info = fs_data;
 
     // Create the "hello.txt" file
-    file_name.name = "hello.txt";
-    file_name.len = strlen(file_name.name);
+    // file_name.name = "hello.txt";
+    // file_name.len = strlen(file_name.name);
     
-    file_dentry = d_alloc(entry, &file_name);
-    if (!file_dentry) {
-        pr_err("Failed to allocate dentry for hello.txt\n");
-        goto out_fail;
-    }
+    // file_dentry = d_alloc(entry, &file_name);
+    // if (!file_dentry) {
+    //     pr_err("Failed to allocate dentry for hello.txt\n");
+    //     goto out_fail;
+    // }
 
-    file_inode = custom_fs_get_inode(entry->d_sb, S_IFREG | 0644);
-    if (!file_inode) {
-        pr_err("Failed to allocate inode for hello.txt\n");
-        goto out_fail;
-    }
+    // file_inode = custom_fs_get_inode(entry->d_sb, S_IFREG | 0644);
+    // if (!file_inode) {
+    //     pr_err("Failed to allocate inode for hello.txt\n");
+    //     goto out_fail;
+    // }
 
-    file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &custom_fs_dentry_operations;
-    file_dentry->d_sb = entry->d_sb;
+    // file_dentry->d_inode = file_inode;
+    // file_dentry->d_op = &custom_fs_dentry_operations;
+    // file_dentry->d_sb = entry->d_sb;
 
-    inc_nlink(file_inode);
-    d_instantiate(file_dentry, file_inode);
+    // inc_nlink(file_inode);
+    // d_instantiate(file_dentry, file_inode);
 
-    return entry;
+    // return entry;
 
 out_fail:
     // Cleanup on failure
