@@ -1,4 +1,4 @@
-obj-m += file_sys_driver.o
+obj-m += read_only_fs.o
 
 # Path to the kernel source code
 KDIR := /lib/modules/$(shell uname -r)/build
