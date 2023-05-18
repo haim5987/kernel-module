@@ -5,6 +5,27 @@
 
 #define FILE_SYSTEM_MAGIC 0x12345678
 
+// Structure to hold custom file system data
+struct custom_fs_data {
+    struct super_block *sb;
+};
+
+// Custom file system file operations
+static const struct file_operations custom_fs_file_operations = {
+    .read = generic_read_dir
+};
+
+// Custom file system superblock operations
+static const struct super_operations custom_fs_super_operations = {
+    .statfs = simple_statfs,
+    .drop_inode = generic_delete_inode,
+};
+
+// Custom file system inode operations
+static const struct inode_operations custom_fs_inode_operations = {
+    .getattr = simple_getattr,
+};
+
 
 // Initialize custom file system superblock
 static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
@@ -80,26 +101,7 @@ static void __exit custom_fs_exit(void)
 
 
 
-// Structure to hold custom file system data
-struct custom_fs_data {
-    struct super_block *sb;
-};
 
-// Custom file system file operations
-static const struct file_operations custom_fs_file_operations = {
-    .read = generic_read_dir
-};
-
-// Custom file system superblock operations
-static const struct super_operations custom_fs_super_operations = {
-    .statfs = simple_statfs,
-    .drop_inode = generic_delete_inode,
-};
-
-// Custom file system inode operations
-static const struct inode_operations custom_fs_inode_operations = {
-    .getattr = simple_getattr,
-};
 
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
