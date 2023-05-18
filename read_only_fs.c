@@ -29,8 +29,7 @@ static const struct inode_operations custom_fs_inode_operations = {
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
     .name = "customfs",
-    .fs_flags = FS_REQUIRES_DEV,
-    .get_sb = simple_get_sb,
+    .mount = custom_fs_mount,
     .kill_sb = kill_litter_super,
 };
 
