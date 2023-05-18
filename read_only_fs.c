@@ -105,7 +105,6 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
     // Create the "hello.txt" file
     file_name.name = "hello.txt";
     file_name.len = strlen(file_name.name);
-    file_name.hash = full_name_hash(file_name.name, file_name.len);
     
     file_dentry = d_alloc(entry, &file_name);
     if (!file_dentry) {
