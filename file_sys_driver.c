@@ -16,6 +16,8 @@ static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int
     struct inode *root_inode = NULL;
     struct dentry *file_dentry = NULL;
     struct file *file = NULL;
+    struct super_block *sb;
+
     int error = 0;
 
     // Get the superblock from the file_system_type
