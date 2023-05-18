@@ -7,6 +7,7 @@
 
 static const struct address_space_operations custom_fs_aops;
 static const struct inode_operations custom_fs_inode_operations;
+static const struct dentry_operations custom_fs_dentry_operations;
 
 // Structure to hold custom file system data
 struct custom_fs_data {
@@ -120,7 +121,7 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &custom_fs_file_operations;
+    file_dentry->d_op = &custom_fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
     inc_nlink(file_inode);
