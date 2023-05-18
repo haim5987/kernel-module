@@ -30,7 +30,7 @@ struct inode *myfs_get_inode(struct super_block *sb, int mode)
     inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
     switch (mode & S_IFMT) {
         case S_IFREG:
-            inode->i_op = &myfs_file_inode_operations;
+            inode->i_op = &simple_file_inode_operations;
             inode->i_fop = &myfs_file_operations;
             break;
         case S_IFDIR:
