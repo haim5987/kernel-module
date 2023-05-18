@@ -138,7 +138,7 @@ out_fail:
 
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
-    .name = "customfs",
+    .name = "customfs2",
     .mount = custom_fs_mount,
     .kill_sb = kill_litter_super,
 };
