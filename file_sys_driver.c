@@ -12,50 +12,16 @@ MODULE_DESCRIPTION("Read-only Hello World file system driver");
 static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int flags, const char *dev_name, void *data) {
     printk(KERN_INFO "Mount successful!\n");
     
-    struct dentry *root_dentry = NULL;
-    struct inode *root_inode = NULL;
-    struct dentry *file_dentry = NULL;
-    struct file *file = NULL;
-    struct super_block *sb;
+    struct dentry *ret;
 
-    int error = 0;
+    // Create the root dentry for your file system
+    ret = mount_bdev(fs_type, flags, dev_name, data, myfs_fill_super);
+    if (IS_ERR(ret))
+        printk(KERN_ERR "Failed to mount the file system.\n");
+    else
+        printk(KERN_INFO "File system mounted successfully.\n");
 
-
-    struct super_block *sb;
-    sb = get_sb_nodev(file_system_type, NULL, data, fill_super);
-
-    // // Get the superblock from the file_system_type
-    // sb = mount_bdev(fs_type, NULL, data);
-    // if (IS_ERR(sb))
-    // {
-    //     error = PTR_ERR(sb);
-    //     return error;
-    // }
-
-    // // Create the root inode
-    // root_inode = new_inode(sb);
-    // if (!root_inode)
-    // {
-    //     error = -ENOMEM;
-    //     goto out_sb;
-    // }
-
-
-
-out_file:
-    if (file)
-        fput(file);
-out_dentry:
-    if (file_dentry)
-        dput(file_dentry);
-out_inode:
-    if (root_dentry)
-        dput(root_dentry);
-out_sb:
-    if (sb)
-        deactivate_locked_super(sb);
-
-    return error;
+    return ret;
 }
 
 
