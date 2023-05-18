@@ -52,28 +52,26 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
     return 0;
 }
 
-// // Mount the custom file system
-// static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
-//                                       int flags, const char *dev_name, void *data)
-// {
-//     struct dentry *entry;
-//     struct custom_fs_data *fs_data;
+static struct inode *custom_fs_get_inode(struct super_block *sb, int mode)
+{
+    struct inode *inode;
 
-//     entry = mount_nodev(fs_type, flags, data, custom_fs_fill_super);
-//     if (IS_ERR(entry))
-//         return entry;
+    inode = new_inode(sb);
+    if (!inode)
+        return NULL;
 
-//     fs_data = kzalloc(sizeof(struct custom_fs_data), GFP_KERNEL);
-//     if (!fs_data) {
-//         pr_err("Failed to allocate memory for custom_fs_data\n");
-//         return ERR_PTR(-ENOMEM);
-//     }
+    inode->i_mode = mode;
+    inode->i_uid.val = 0;  // Set the UID (user ID) of the inode
+    inode->i_gid.val = 0;  // Set the GID (group ID) of the inode
+    inode->i_blocks = 0;   // Set the number of blocks used by the inode
+    inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);  // Set the access, modification, and change times
+    inode->i_mapping->a_ops = &custom_fs_aops;  // Set the address space operations
+    inode->i_op = &custom_fs_inode_operations;  // Set the inode operations
 
-//     fs_data->sb = entry->d_sb->s_fs_info;
-//     entry->d_sb->s_fs_info = fs_data;
+    // Additional initialization specific to your custom file system
 
-//     return entry;
-// }
+    return inode;
+}
 
 // Mount the custom file system
 static struct dentry *custom_fs_mount(struct file_system_type *fs_type,
