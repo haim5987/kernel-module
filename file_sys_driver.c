@@ -18,21 +18,35 @@ static struct dentry *hello_mount_callback(struct file_system_type *fs_type, int
     struct file *file = NULL;
     int error = 0;
 
+    // Get the superblock from the file_system_type
+    sb = get_sb_nodev(fs_type, flags, dev_name, data);
+    if (IS_ERR(sb))
+    {
+        error = PTR_ERR(sb);
+        return error;
+    }
+
     // Create the root inode
-    root_inode = new_inode(fs_type->i_sb);
-    if (!root_inode) {
+    root_inode = new_inode(sb);
+    if (!root_inode)
+    {
         error = -ENOMEM;
-        goto out;
+        goto out_sb;
     }
 
 
-    out:
+out_file:
     if (file)
         fput(file);
+out_dentry:
     if (file_dentry)
         dput(file_dentry);
+out_inode:
     if (root_dentry)
         dput(root_dentry);
+out_sb:
+    if (sb)
+        deactivate_locked_super(sb);
 
     return error;
 }
