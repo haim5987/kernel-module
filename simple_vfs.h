@@ -11,7 +11,7 @@
 //     unsigned long long fib_num;
 // };
 
-extern const struct super_operations custom_fs_super_operations;
+// extern const struct super_operations custom_fs_super_operations;
 
 struct inode *custom_fs_get_inode(struct super_block *sb, int mode);
 
