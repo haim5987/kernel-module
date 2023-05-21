@@ -15,7 +15,7 @@
 
 struct inode *custom_fs_get_inode(struct super_block *sb, int mode);
 
-ssize_t custom_fs_file_read(struct file *filp, char __user *buf, size_t len, loff_t *ppos);
+ssize_t fs_file_read(struct file *filp, char __user *buf, size_t len, loff_t *ppos);
 
 struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data);
 
