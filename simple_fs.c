@@ -121,16 +121,16 @@ int simplefs_fill_super(struct super_block *sb, void *data, int silent)
 
 //     return 0;
 
-iput:
-    iput(root_inode);
-free_bfree:
-    kfree(sbi->bfree_bitmap);
-free_ifree:
-    kfree(sbi->ifree_bitmap);
-free_sbi:
-    kfree(sbi);
-release:
-    brelse(bh);
+// iput:
+//     iput(root_inode);
+// free_bfree:
+//     kfree(sbi->bfree_bitmap);
+// free_ifree:
+//     kfree(sbi->ifree_bitmap);
+// free_sbi:
+//     kfree(sbi);
+// release:
+//     brelse(bh);
 
     return ret;
 }
