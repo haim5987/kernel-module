@@ -141,30 +141,33 @@ out_fail:
 
 static void custom_fs_kill_super(struct super_block *sb)
 {
-    struct inode *root_inode = d_inode(sb->s_root);
+    kill_block_super(sb);
 
-    // Clean up resources associated with the root inode
-    if (root_inode) {
-        // Cleanup operations specific to your file system's root inode
-        // ...
+    pr_info("unmounted disk\n");
+    // struct inode *root_inode = d_inode(sb->s_root);
 
-        // Release the root inode
-        iput(root_inode);
-    }
-    // iput(root_inode);
+    // // Clean up resources associated with the root inode
+    // if (root_inode) {
+    //     // Cleanup operations specific to your file system's root inode
+    //     // ...
 
-    // Perform any additional cleanup operations specific to your file system
-    // ...
+    //     // Release the root inode
+    //     iput(root_inode);
+    // }
+    // // iput(root_inode);
 
-    // Free the superblock structure
-    kfree(sb);
+    // // Perform any additional cleanup operations specific to your file system
+    // // ...
+
+    // // Free the superblock structure
+    // kfree(sb);
 }
 
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
     .name = "customfs",
     .mount = custom_fs_mount,
-    .kill_sb = custom_fs_kill_super,
+    .kill_sb = simplefs_kill_sb,
 };
 
 
