@@ -118,11 +118,6 @@ static ssize_t custom_fs_file_read(struct file *filp, char __user *buf, size_t l
     return ret;
 }
 
-// Custom file system file operations
-static const struct file_operations custom_fs_file_operations = {
-    .read = custom_fs_file_read,
-};
-
 // Mount the custom file system
 static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data)
 {
