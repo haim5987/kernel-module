@@ -2,6 +2,8 @@
 #include <linux/fs.h>
 #include <linux/pagemap.h>
 #include <linux/init.h>
+#include <linux/slab.h>
+
 
 #define FILE_SYSTEM_MAGIC 0x12345678
 
