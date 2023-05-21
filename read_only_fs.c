@@ -17,10 +17,9 @@ struct custom_fs_data {
 };
 
 // Custom file system file operations
-static const struct file_operations custom_fs_file_operations;
-//  = {
-    // .read = generic_read_dir
-// };
+static const struct file_operations custom_fs_file_operations = {
+    .read = generic_read_dir
+};
 
 // Custom file system superblock operations
 static const struct super_operations custom_fs_super_operations = {
