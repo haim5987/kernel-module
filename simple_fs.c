@@ -141,7 +141,7 @@ struct dentry *simplefs_mount(struct file_system_type *fs_type,
                               const char *dev_name,
                               void *data)
 {
-    struct dentry *dentry = mount_ndev(fs_type, flags, dev_name, data, simplefs_fill_super);
+    struct dentry *dentry = mount_nodev(fs_type, flags, dev_name, data, simplefs_fill_super);
     if (IS_ERR(dentry))
         pr_err("'%s' mount failure\n", dev_name);
     else
