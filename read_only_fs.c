@@ -6,7 +6,7 @@
 #define FILE_SYSTEM_MAGIC 0x12345678
 
 static const struct address_space_operations custom_fs_aops;
-static const struct inode_operations custom_fs_inode_operations{
+static const struct inode_operations custom_fs_inode_operations = {
     .setattr	= simple_setattr,
 	.getattr	= simple_getattr,
 };
