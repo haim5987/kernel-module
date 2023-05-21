@@ -167,7 +167,7 @@ static void custom_fs_kill_super(struct super_block *sb)
 static struct file_system_type custom_fs_type = {
     .name = "customfs",
     .mount = custom_fs_mount,
-    .kill_sb = simplefs_kill_sb,
+    .kill_sb = custom_fs_kill_super,
 };
 
 
