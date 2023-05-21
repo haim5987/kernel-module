@@ -15,7 +15,7 @@ static struct file_system_type simplefs_file_system_type = {
 
 static int __init simplefs_init(void)
 {
-    ret = register_filesystem(&simplefs_file_system_type);
+    int ret = register_filesystem(&simplefs_file_system_type);
     if (ret) {
         pr_err("register_filesystem() failed\n");
         goto end;
