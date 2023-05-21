@@ -251,19 +251,17 @@ static void fs_kill_super(struct super_block *sb)
     kfree(fs_data);
 }
 
-// Custom file system file system type
-static struct file_system_type custom_fs_type = {
+static struct file_system_type fs_type = {
     .name = "vfs",
     .mount = fs_mount,
     .kill_sb = fs_kill_super,
 };
 
-// Initialize the custom file system module
-static int __init custom_fs_init(void)
+static int __init fs_init(void)
 {
     int ret;
 
-    ret = register_filesystem(&custom_fs_type);
+    ret = register_filesystem(&fs_type);
     if (ret != 0) {
         pr_err("Failed to register custom file system\n");
         return ret;
@@ -274,16 +272,15 @@ static int __init custom_fs_init(void)
     return 0;
 }
 
-// Clean up the custom file system module
-static void __exit custom_fs_exit(void)
+static void __exit fs_exit(void)
 {
     unregister_filesystem(&custom_fs_type);
 
     pr_info("Custom file system module unloaded\n");
 }
 
-module_init(custom_fs_init);
-module_exit(custom_fs_exit);
+module_init(fs_init);
+module_exit(fs_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Haim Kasel");
