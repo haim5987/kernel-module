@@ -9,7 +9,30 @@
 
 static const struct address_space_operations custom_fs_aops;
 static const struct inode_operations custom_fs_inode_operations;
+static const struct dentry_operations custom_fs_dentry_operations;
 
+// Structure to hold custom file system data
+struct custom_fs_data {
+    struct super_block *sb;
+    unsigned long long fib_num;  // Next number of Fibonacci sequence
+};
+
+// Custom file system file operations
+static const struct file_operations custom_fs_file_operations = {
+    .read = generic_read_dir
+};
+
+// Custom file system superblock operations
+static const struct super_operations custom_fs_super_operations = {
+    .statfs = simple_statfs,
+    .drop_inode = generic_delete_inode,
+};
+
+// Custom file system inode operations
+static const struct inode_operations custom_fs_inode_operations = {
+    .setattr = simple_setattr,
+    .getattr = simple_getattr,
+};
 
 // Fibonacci sequence calculation
 static unsigned long long fibonacci(unsigned long long n)
