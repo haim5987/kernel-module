@@ -144,7 +144,14 @@ static void custom_fs_kill_super(struct super_block *sb)
     struct inode *root_inode = d_inode(sb->s_root);
 
     // Clean up resources associated with the root inode
-    iput(root_inode);
+    if (root_inode) {
+        // Cleanup operations specific to your file system's root inode
+        // ...
+
+        // Release the root inode
+        iput(root_inode);
+    }
+    // iput(root_inode);
 
     // Perform any additional cleanup operations specific to your file system
     // ...
