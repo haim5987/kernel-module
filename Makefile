@@ -1,4 +1,4 @@
-obj-m += read_only_fs.o
+obj-m += simple_fs.o
 
 # Path to the kernel source code
 KDIR := /lib/modules/$(shell uname -r)/build
