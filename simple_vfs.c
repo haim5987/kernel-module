@@ -242,7 +242,7 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
         goto out_fail;
 
     // Create the "/calc/fib.num" file
-    if (custom_fs_create_fib_num_file(entry->d_sb->s_root->d_inode) != 0)
+    if (custom_fs_create_fib_num_file(entry->d_sb->s_root) != 0)
         goto out_fail;
 
     return entry;
