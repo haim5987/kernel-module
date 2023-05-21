@@ -50,9 +50,9 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
     // root_inode->i_fop = &custom_fs_file_operations;
     // root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime =  current_time(root_inode);;
 
-    // sb->s_root = d_make_root(root_inode);
-    // if (!sb->s_root)
-    //     return -ENOMEM;
+    sb->s_root = d_make_root(root_inode);
+    if (!sb->s_root)
+        return -ENOMEM;
 
     return 0;
 }
