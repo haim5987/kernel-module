@@ -6,10 +6,7 @@
 #define FILE_SYSTEM_MAGIC 0x12345678
 
 static const struct address_space_operations custom_fs_aops;
-static const struct inode_operations custom_fs_inode_operations = {
-    .setattr	= simple_setattr,
-	.getattr	= simple_getattr,
-};
+static const struct inode_operations custom_fs_inode_operations;
 static const struct dentry_operations custom_fs_dentry_operations;
 
 // Structure to hold custom file system data
@@ -30,7 +27,8 @@ static const struct super_operations custom_fs_super_operations = {
 
 // Custom file system inode operations
 static const struct inode_operations custom_fs_inode_operations = {
-    .getattr = simple_getattr,
+    .setattr	= simple_setattr,
+	.getattr	= simple_getattr,
 };
 
 
