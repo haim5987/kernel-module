@@ -274,7 +274,7 @@ static int __init fs_init(void)
 
 static void __exit fs_exit(void)
 {
-    unregister_filesystem(&custom_fs_type);
+    unregister_filesystem(&fs_type);
 
     pr_info("Custom file system module unloaded\n");
 }
