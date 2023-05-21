@@ -37,12 +37,12 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
 {
     struct inode *root_inode;
 
-    // sb->s_magic = FILE_SYSTEM_MAGIC;
-    // sb->s_op = &custom_fs_super_operations;
+    sb->s_magic = FILE_SYSTEM_MAGIC;
+    sb->s_op = &custom_fs_super_operations;
 
-    // root_inode = new_inode(sb);
-    // if (!root_inode)
-    //     return -ENOMEM;
+    root_inode = new_inode(sb);
+    if (!root_inode)
+        return -ENOMEM;
 
     // root_inode->i_ino = 1;
     // root_inode->i_sb = sb;
