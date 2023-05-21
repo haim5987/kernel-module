@@ -39,17 +39,17 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
     struct inode *root_inode;
 
     sb->s_magic = FILE_SYSTEM_MAGIC;
-    // sb->s_op = &custom_fs_super_operations;
+    sb->s_op = &custom_fs_super_operations;
 
     root_inode = new_inode(sb);
     if (!root_inode)
         return -ENOMEM;
 
-    // root_inode->i_ino = 1;
-    // root_inode->i_sb = sb;
-    // root_inode->i_op = &custom_fs_inode_operations;
-    // root_inode->i_fop = &custom_fs_file_operations;
-    // root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime =  current_time(root_inode);;
+    root_inode->i_ino = 1;
+    root_inode->i_sb = sb;
+    root_inode->i_op = &custom_fs_inode_operations;
+    root_inode->i_fop = &custom_fs_file_operations;
+    root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime =  current_time(root_inode);;
 
     sb->s_root = d_make_root(root_inode);
     if (!sb->s_root)
@@ -138,11 +138,25 @@ out_fail:
 }
 
 
+static void custom_fs_kill_super(struct super_block *sb)
+{
+    struct inode *root_inode = d_inode(sb->s_root);
+
+    // Clean up resources associated with the root inode
+    iput(root_inode);
+
+    // Perform any additional cleanup operations specific to your file system
+    // ...
+
+    // Free the superblock structure
+    kfree(sb);
+}
+
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
     .name = "customfs",
     .mount = custom_fs_mount,
-    .kill_sb = kill_litter_super,
+    .kill_sb = custom_fs_kill_super,
 };
 
 
