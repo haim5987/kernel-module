@@ -150,7 +150,7 @@ static void custom_fs_kill_super(struct super_block *sb)
     // ...
 
     // Free the superblock structure
-    kfree(sb);
+    // kfree(sb);
 }
 
 // Custom file system file system type
