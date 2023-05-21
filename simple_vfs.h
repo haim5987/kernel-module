@@ -2,14 +2,14 @@
 
 #define FILE_SYSTEM_MAGIC 0x12345678
 
-extern const struct file_operations custom_fs_file_operations;
-extern const struct inode_operations custom_fs_inode_operations;
-extern const struct dentry_operations custom_fs_dentry_operations;
+// extern const struct file_operations custom_fs_file_operations;
+// extern const struct inode_operations custom_fs_inode_operations;
+// extern const struct dentry_operations custom_fs_dentry_operations;
 
-struct custom_fs_data {
-    struct super_block *sb;
-    unsigned long long fib_num;
-};
+// struct custom_fs_data {
+//     struct super_block *sb;
+//     unsigned long long fib_num;
+// };
 
 extern const struct super_operations custom_fs_super_operations;
 
