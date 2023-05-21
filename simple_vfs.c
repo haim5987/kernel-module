@@ -8,7 +8,7 @@
 
 static const struct address_space_operations fs_aops;
 static const struct inode_operations fs_inode_operations;
-static const struct dentry_operations fs_dentry_operations;
+static const struct dentry_operations custom_fs_dentry_operations;
 
 // Structure to hold custom file system data
 struct custom_fs_data {
@@ -22,7 +22,7 @@ static const struct file_operations fs_file_operations = {
 };
 
 // Custom file system superblock operations
-static const struct super_operations custom_fs_super_operations = {
+static const struct super_operations fs_super_operations = {
     .statfs = simple_statfs,
     .drop_inode = generic_delete_inode,
 };
@@ -49,7 +49,7 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
     struct custom_fs_data *fs_data;
 
     sb->s_magic = FILE_SYSTEM_MAGIC;
-    sb->s_op = &custom_fs_super_operations;
+    sb->s_op = &fs_super_operations;
 
     root_inode = new_inode(sb);
     if (!root_inode)
@@ -161,7 +161,7 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &fs_dentry_operations;
+    file_dentry->d_op = &custom_fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
     entry->d_sb->s_root = file_dentry;
@@ -183,7 +183,7 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &fs_dentry_operations;
+    file_dentry->d_op = &custom_fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
     file_inode->i_fop = &fs_file_operations;
@@ -208,7 +208,7 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &fs_dentry_operations;
+    file_dentry->d_op = &custom_fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
     file_inode->i_fop = &fs_file_operations;
