@@ -6,9 +6,9 @@
 
 #define FILE_SYSTEM_MAGIC 0x12345678
 
-static const struct address_space_operations custom_fs_aops;
-static const struct inode_operations custom_fs_inode_operations;
-static const struct dentry_operations custom_fs_dentry_operations;
+static const struct address_space_operations fs_aops;
+static const struct inode_operations fs_inode_operations;
+static const struct dentry_operations fs_dentry_operations;
 
 // Structure to hold custom file system data
 struct custom_fs_data {
@@ -17,7 +17,7 @@ struct custom_fs_data {
 };
 
 // Custom file system file operations
-static const struct file_operations custom_fs_file_operations = {
+static const struct file_operations fs_file_operations = {
     .read = generic_read_dir
 };
 
@@ -28,7 +28,7 @@ static const struct super_operations custom_fs_super_operations = {
 };
 
 // Custom file system inode operations
-static const struct inode_operations custom_fs_inode_operations = {
+static const struct inode_operations fs_inode_operations = {
     .setattr = simple_setattr,
     .getattr = simple_getattr,
 };
@@ -57,8 +57,8 @@ static int custom_fs_fill_super(struct super_block *sb, void *data, int silent)
 
     root_inode->i_ino = 1;
     root_inode->i_sb = sb;
-    root_inode->i_op = &custom_fs_inode_operations;
-    root_inode->i_fop = &custom_fs_file_operations;
+    root_inode->i_op = &fs_inode_operations;
+    root_inode->i_fop = &fs_file_operations;
     root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime = current_time(root_inode);
 
     sb->s_root = d_make_root(root_inode);
@@ -91,8 +91,8 @@ static struct inode *custom_fs_get_inode(struct super_block *sb, int mode)
     inode->i_gid.val = 0;  // Set the GID (group ID) of the inode
     inode->i_blocks = 0;   // Set the number of blocks used by the inode
     inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);  // Set the access, modification, and change times
-    inode->i_mapping->a_ops = &custom_fs_aops;  // Set the address space operations
-    inode->i_op = &custom_fs_inode_operations;  // Set the inode operations
+    inode->i_mapping->a_ops = &fs_aops;  // Set the address space operations
+    inode->i_op = &fs_inode_operations;  // Set the inode operations
 
     // Additional initialization specific to your custom file system
 
@@ -161,7 +161,7 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &custom_fs_dentry_operations;
+    file_dentry->d_op = &fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
     entry->d_sb->s_root = file_dentry;
@@ -183,10 +183,10 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &custom_fs_dentry_operations;
+    file_dentry->d_op = &fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
-    file_inode->i_fop = &custom_fs_file_operations;
+    file_inode->i_fop = &fs_file_operations;
 
     inc_nlink(file_inode);
     d_instantiate(file_dentry, file_inode);
@@ -208,10 +208,10 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
     }
 
     file_dentry->d_inode = file_inode;
-    file_dentry->d_op = &custom_fs_dentry_operations;
+    file_dentry->d_op = &fs_dentry_operations;
     file_dentry->d_sb = entry->d_sb;
 
-    file_inode->i_fop = &custom_fs_file_operations;
+    file_inode->i_fop = &fs_file_operations;
 
     inc_nlink(file_inode);
     d_instantiate(file_dentry, file_inode);
@@ -271,4 +271,4 @@ module_exit(custom_fs_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Haim Kasel");
-MODULE_DESCRIPTION("Custom File System Module");
+MODULE_DESCRIPTION("Simple Virtual File System Module, Creates Read Only /hello.txt and /calc/fib.num Files.");
