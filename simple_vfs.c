@@ -167,7 +167,7 @@ static int custom_fs_create_hello_file(struct dentry *parent_dentry)
     hello_dentry->d_op = &custom_fs_dentry_operations;
     hello_dentry->d_sb = parent_dentry->d_sb;
 
-    hello_inode->i_fop = &custom_fs_file_operations;
+    hello_inode->i_fop = &fs_file_operations;
 
     inc_nlink(hello_inode);
     d_instantiate(hello_dentry, hello_inode);
@@ -202,7 +202,7 @@ static int custom_fs_create_fib_num_file(struct dentry *parent_dentry)
     fib_num_dentry->d_op = &custom_fs_dentry_operations;
     fib_num_dentry->d_sb = parent_dentry->d_sb;
 
-    fib_num_inode->i_fop = &custom_fs_file_operations;
+    fib_num_inode->i_fop = &fs_file_operations;
 
     inc_nlink(fib_num_inode);
     d_instantiate(fib_num_dentry, fib_num_inode);
