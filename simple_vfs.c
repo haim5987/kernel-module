@@ -71,7 +71,7 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
     return 0;
 }
 
-static struct inode *custom_fs_get_inode(struct super_block *sb, int mode)
+static struct inode *fs_get_inode(struct super_block *sb, int mode)
 {
     struct inode *inode;
 
@@ -90,26 +90,20 @@ static struct inode *custom_fs_get_inode(struct super_block *sb, int mode)
     return inode;
 }
 
-static ssize_t custom_fs_file_read(struct file *filp, char __user *buf, size_t len, loff_t *ppos)
+static ssize_t fs_file_read(struct file *filp, char __user *buf, size_t len, loff_t *ppos)
 {
     struct fs_data *fs_data = filp->f_path.dentry->d_sb->s_fs_info;
     char fib_num_str[64];
     ssize_t ret;
 
-    // Calculate the next Fibonacci number
-    fs_data->fib_num = fibonacci(fs_data->fib_num);
-
-    // Convert the Fibonacci number to a string
-    snprintf(fib_num_str, sizeof(fib_num_str), "%llu\n", fs_data->fib_num);
-
-    // Copy the Fibonacci number string to the user buffer
-    ret = simple_read_from_buffer(buf, len, ppos, fib_num_str, strlen(fib_num_str));
+    fs_data->fib_num = fibonacci(fs_data->fib_num);  // next Fibonacci num
+    snprintf(fib_num_str, sizeof(fib_num_str), "%llu\n", fs_data->fib_num);  // fib num to str
+    ret = simple_read_from_buffer(buf, len, ppos, fib_num_str, strlen(fib_num_str));   // fib num str to user buffer
 
     return ret;
 }
 
-// Create the "/calc" directory
-static int custom_fs_create_calc_directory(struct dentry *parent_dentry)
+static int fs_create_calc_directory(struct dentry *parent_dentry)
 {
     struct dentry *calc_dentry;
     struct inode *calc_inode;
@@ -124,7 +118,7 @@ static int custom_fs_create_calc_directory(struct dentry *parent_dentry)
         return -ENOMEM;
     }
 
-    calc_inode = custom_fs_get_inode(parent_dentry->d_sb, S_IFDIR | 0755);
+    calc_inode = fs_get_inode(parent_dentry->d_sb, S_IFDIR | 0755);
     if (!calc_inode) {
         pr_err("Failed to allocate inode for /calc\n");
         dput(calc_dentry);
@@ -140,8 +134,7 @@ static int custom_fs_create_calc_directory(struct dentry *parent_dentry)
     return 0;
 }
 
-// Create the "hello.txt" file
-static int custom_fs_create_hello_file(struct dentry *parent_dentry)
+static int fs_create_hello_file(struct dentry *parent_dentry)
 {
     struct dentry *hello_dentry;
     struct inode *hello_inode;
@@ -156,7 +149,7 @@ static int custom_fs_create_hello_file(struct dentry *parent_dentry)
         return -ENOMEM;
     }
 
-    hello_inode = custom_fs_get_inode(parent_dentry->d_sb, S_IFREG | 0644);
+    hello_inode = fs_get_inode(parent_dentry->d_sb, S_IFREG | 0644);
     if (!hello_inode) {
         pr_err("Failed to allocate inode for hello.txt\n");
         dput(hello_dentry);
@@ -175,8 +168,7 @@ static int custom_fs_create_hello_file(struct dentry *parent_dentry)
     return 0;
 }
 
-// Create the "/calc/fib.num" file
-static int custom_fs_create_fib_num_file(struct dentry *parent_dentry)
+static int fs_create_fib_num_file(struct dentry *parent_dentry)
 {
     struct dentry *fib_num_dentry;
     struct inode *fib_num_inode;
@@ -191,7 +183,7 @@ static int custom_fs_create_fib_num_file(struct dentry *parent_dentry)
         return -ENOMEM;
     }
 
-    fib_num_inode = custom_fs_get_inode(parent_dentry->d_sb, S_IFREG | 0644);
+    fib_num_inode = fs_get_inode(parent_dentry->d_sb, S_IFREG | 0644);
     if (!fib_num_inode) {
         pr_err("Failed to allocate inode for /calc/fib.num\n");
         dput(fib_num_dentry);
@@ -210,20 +202,17 @@ static int custom_fs_create_fib_num_file(struct dentry *parent_dentry)
     return 0;
 }
 
-// Mount the custom file system
-static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data)
+static struct dentry *fs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data)
 {
     struct dentry *entry;
     struct fs_data *fs_data;
 
-    // Attempt to mount the file system
     entry = mount_nodev(fs_type, flags, data, fs_fill_super);
     if (IS_ERR(entry)) {
         pr_err("Failed to mount the custom file system\n");
         return entry;
     }
 
-    // Allocate memory for custom file system data
     fs_data = kzalloc(sizeof(struct fs_data), GFP_KERNEL);
     if (!fs_data) {
         pr_err("Failed to allocate memory for fs_data\n");
@@ -232,28 +221,26 @@ static struct dentry *custom_fs_mount(struct file_system_type *fs_type, int flag
 
     fs_data->sb = entry->d_sb->s_fs_info;
     entry->d_sb->s_fs_info = fs_data;
-
-    // Create the "/calc" directory
-    if (custom_fs_create_calc_directory(entry) != 0)
+    
+    if (fs_create_calc_directory(entry) != 0) // create /calc dir
         goto out_fail;
 
-    // Create the "hello.txt" file
-    if (custom_fs_create_hello_file(entry->d_sb->s_root) != 0)
+   
+    if (fs_create_hello_file(entry->d_sb->s_root) != 0) // create hello.txt file
         goto out_fail;
 
-    // Create the "/calc/fib.num" file
-    if (custom_fs_create_fib_num_file(entry->d_sb->s_root) != 0)
+   
+    if (fs_create_fib_num_file(entry->d_sb->s_root) != 0) // create /calc/fib.num file
         goto out_fail;
 
     return entry;
 
 out_fail:
-    // Cleanup on failure
     deactivate_locked_super(entry->d_sb);
     return ERR_PTR(-ENOMEM);
 }
 
-static void custom_fs_kill_super(struct super_block *sb)
+static void fs_kill_super(struct super_block *sb)
 {
     struct fs_data *fs_data = sb->s_fs_info;
 
@@ -266,9 +253,9 @@ static void custom_fs_kill_super(struct super_block *sb)
 
 // Custom file system file system type
 static struct file_system_type custom_fs_type = {
-    .name = "customfs",
-    .mount = custom_fs_mount,
-    .kill_sb = custom_fs_kill_super,
+    .name = "vfs",
+    .mount = fs_mount,
+    .kill_sb = fs_kill_super,
 };
 
 // Initialize the custom file system module
