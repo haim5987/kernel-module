@@ -1,6 +1,12 @@
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/buffer_head.h>
+#include <linux/fs.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/statfs.h>
 
 
 int simplefs_fill_super(struct super_block *sb, void *data, int silent)
