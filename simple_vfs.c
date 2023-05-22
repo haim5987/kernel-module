@@ -5,10 +5,23 @@
 #include <linux/fs.h>
 
 #define FILE_SYSTEM_MAGIC 0x12345678
+#define BLOCK_SIZE (1 << 12) /* 4 KiB */
+#define MAX_EXTENTS \
+    ((BLOCK_SIZE - sizeof(uint32_t)) / sizeof(struct fs_extent))
+#define MAX_BLOCKS_PER_EXTENT 8 /* It can be ~(uint32) 0 */
+#define MAX_FILESIZE                                      \
+    ((uint64_t) MAX_BLOCKS_PER_EXTENT *BLOCK_SIZE \
+        * MAX_EXTENTS)
 
 static const struct address_space_operations fs_aops;
 static const struct inode_operations fs_inode_operations;
 static const struct dentry_operations custom_fs_dentry_operations;
+
+struct simplefs_extent {
+    uint32_t ee_block; /* first logical block extent covers */
+    uint32_t ee_len;   /* number of blocks covered by extent */
+    uint32_t ee_start; /* first physical block extent covers */
+};
 
 struct fs_data {
     struct super_block *sb;
@@ -43,6 +56,8 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
     struct fs_data *fs_data;
 
     sb->s_magic = FILE_SYSTEM_MAGIC;
+    sb_set_blocksize(sb, BLOCK_SIZE);
+    sb->s_maxbytes = MAX_FILESIZE;
     sb->s_op = &fs_super_operations;
 
     root_inode = new_inode(sb);
@@ -242,13 +257,13 @@ out_fail:
 
 static void fs_kill_super(struct super_block *sb)
 {
-    struct fs_data *fs_data = sb->s_fs_info;
+    // struct fs_data *fs_data = sb->s_fs_info;
 
-    kill_block_super(sb);
+    // kill_block_super(sb);
 
-    pr_info("Unmounted disk\n");
+    // pr_info("Unmounted disk\n");
 
-    kfree(fs_data);
+    // kfree(fs_data);
 }
 
 static struct file_system_type fs_type = {
