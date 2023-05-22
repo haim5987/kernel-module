@@ -34,8 +34,8 @@ static const struct file_operations fs_file_operations = {
 };
 
 static const struct super_operations fs_super_operations = {
-    // .statfs = simple_statfs,
-    .drop_inode = generic_delete_inode,
+    .statfs = default_statfs,
+    // .drop_inode = generic_delete_inode,
 };
 
 static const struct inode_operations fs_inode_operations = {
