@@ -295,6 +295,8 @@ static struct file_system_type fs_type = {
     .name = "vfs",
     .mount = fs_mount,
     .kill_sb = fs_kill_super,
+    .fs_flags = FS_REQUIRES_DEV,
+    .next = NULL,
 };
 
 static int __init fs_init(void)
