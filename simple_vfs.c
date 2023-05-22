@@ -280,8 +280,10 @@ static void fs_kill_super(struct super_block *sb)
     printk("fs_data *fs_data finish");
 
      printk("kill_block_super start");
-
-    kill_block_super(sb);
+    if (sb){
+        kill_block_super(sb);
+    }
+    
 
     printk("kill_block_super finish");
     pr_info("Unmounted disk\n");
