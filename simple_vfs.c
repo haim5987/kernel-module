@@ -52,6 +52,7 @@ static unsigned long long fibonacci(unsigned long long n)
 
 static int fs_fill_super(struct super_block *sb, void *data, int silent)
 {
+    printk("fs_fill_super start");
     struct inode *root_inode;
     struct fs_data *fs_data;
 
@@ -60,6 +61,8 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
     sb->s_maxbytes = MAX_FILESIZE;
     sb->s_op = &fs_super_operations;
 
+
+    printk("root_inode start");
     root_inode = new_inode(sb);
     if (!root_inode)
         return -ENOMEM;
@@ -70,7 +73,8 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
     root_inode->i_fop = &fs_file_operations;
     root_inode->i_atime = root_inode->i_mtime = root_inode->i_ctime = current_time(root_inode);
 
-    sb->s_root = d_make_root(root_inode);
+    printk("root_inode finish");
+    sb->s_root = d_make_root(root_inode); 
     if (!sb->s_root)
         return -ENOMEM;
 
