@@ -33,24 +33,180 @@ static const struct file_operations fs_file_operations = {
     .read = generic_read_dir
 };
 
+static void simplefs_put_super(struct super_block *sb)
+{
+    struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
+    if (sbi) {
+        kfree(sbi->ifree_bitmap);
+        kfree(sbi->bfree_bitmap);
+        kfree(sbi);
+    }
+}
+static struct inode *simplefs_alloc_inode(struct super_block *sb)
+{
+    struct simplefs_inode_info *ci =
+        kmem_cache_alloc(simplefs_inode_cache, GFP_KERNEL);
+    if (!ci)
+        return NULL;
+
+    inode_init_once(&ci->vfs_inode);
+    return &ci->vfs_inode;
+}
+
+static void simplefs_destroy_inode(struct inode *inode)
+{
+    struct simplefs_inode_info *ci = SIMPLEFS_INODE(inode);
+    kmem_cache_free(simplefs_inode_cache, ci);
+}
+
+static int simplefs_write_inode(struct inode *inode,
+                                struct writeback_control *wbc)
+{
+    struct simplefs_inode *disk_inode;
+    struct simplefs_inode_info *ci = SIMPLEFS_INODE(inode);
+    struct super_block *sb = inode->i_sb;
+    struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
+    struct buffer_head *bh;
+    uint32_t ino = inode->i_ino;
+    uint32_t inode_block = (ino / SIMPLEFS_INODES_PER_BLOCK) + 1;
+    uint32_t inode_shift = ino % SIMPLEFS_INODES_PER_BLOCK;
+
+    if (ino >= sbi->nr_inodes)
+        return 0;
+
+    bh = sb_bread(sb, inode_block);
+    if (!bh)
+        return -EIO;
+
+    disk_inode = (struct simplefs_inode *) bh->b_data;
+    disk_inode += inode_shift;
+
+    /* update the mode using what the generic inode has */
+    disk_inode->i_mode = inode->i_mode;
+    disk_inode->i_uid = i_uid_read(inode);
+    disk_inode->i_gid = i_gid_read(inode);
+    disk_inode->i_size = inode->i_size;
+    disk_inode->i_ctime = inode->i_ctime.tv_sec;
+    disk_inode->i_atime = inode->i_atime.tv_sec;
+    disk_inode->i_mtime = inode->i_mtime.tv_sec;
+    disk_inode->i_blocks = inode->i_blocks;
+    disk_inode->i_nlink = inode->i_nlink;
+    disk_inode->ei_block = ci->ei_block;
+    strncpy(disk_inode->i_data, ci->i_data, sizeof(ci->i_data));
+
+    mark_buffer_dirty(bh);
+    sync_dirty_buffer(bh);
+    brelse(bh);
+
+    return 0;
+}
+
+static void simplefs_put_super(struct super_block *sb)
+{
+    struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
+    if (sbi) {
+        kfree(sbi->ifree_bitmap);
+        kfree(sbi->bfree_bitmap);
+        kfree(sbi);
+    }
+}
+
+static int simplefs_sync_fs(struct super_block *sb, int wait)
+{
+    struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
+    struct simplefs_sb_info *disk_sb;
+    int i;
+
+    /* Flush superblock */
+    struct buffer_head *bh = sb_bread(sb, 0);
+    if (!bh)
+        return -EIO;
+
+    disk_sb = (struct simplefs_sb_info *) bh->b_data;
+
+    disk_sb->nr_blocks = sbi->nr_blocks;
+    disk_sb->nr_inodes = sbi->nr_inodes;
+    disk_sb->nr_istore_blocks = sbi->nr_istore_blocks;
+    disk_sb->nr_ifree_blocks = sbi->nr_ifree_blocks;
+    disk_sb->nr_bfree_blocks = sbi->nr_bfree_blocks;
+    disk_sb->nr_free_inodes = sbi->nr_free_inodes;
+    disk_sb->nr_free_blocks = sbi->nr_free_blocks;
+
+    mark_buffer_dirty(bh);
+    if (wait)
+        sync_dirty_buffer(bh);
+    brelse(bh);
+
+    /* Flush free inodes bitmask */
+    for (i = 0; i < sbi->nr_ifree_blocks; i++) {
+        int idx = sbi->nr_istore_blocks + i + 1;
+
+        bh = sb_bread(sb, idx);
+        if (!bh)
+            return -EIO;
+
+        memcpy(bh->b_data, (void *) sbi->ifree_bitmap + i * SIMPLEFS_BLOCK_SIZE,
+               SIMPLEFS_BLOCK_SIZE);
+
+        mark_buffer_dirty(bh);
+        if (wait)
+            sync_dirty_buffer(bh);
+        brelse(bh);
+    }
+
+    /* Flush free blocks bitmask */
+    for (i = 0; i < sbi->nr_bfree_blocks; i++) {
+        int idx = sbi->nr_istore_blocks + sbi->nr_ifree_blocks + i + 1;
+
+        bh = sb_bread(sb, idx);
+        if (!bh)
+            return -EIO;
+
+        memcpy(bh->b_data, (void *) sbi->bfree_bitmap + i * SIMPLEFS_BLOCK_SIZE,
+               SIMPLEFS_BLOCK_SIZE);
+
+        mark_buffer_dirty(bh);
+        if (wait)
+            sync_dirty_buffer(bh);
+        brelse(bh);
+    }
+
+    return 0;
+}
+
+static int simplefs_statfs(struct dentry *dentry, struct kstatfs *stat)
+{
+    struct super_block *sb = dentry->d_sb;
+    struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
+
+    stat->f_type = SIMPLEFS_MAGIC;
+    stat->f_bsize = SIMPLEFS_BLOCK_SIZE;
+    stat->f_blocks = sbi->nr_blocks;
+    stat->f_bfree = sbi->nr_free_blocks;
+    stat->f_bavail = sbi->nr_free_blocks;
+    stat->f_files = sbi->nr_inodes - sbi->nr_free_inodes;
+    stat->f_ffree = sbi->nr_free_inodes;
+    stat->f_namelen = SIMPLEFS_FILENAME_LEN;
+
+    return 0;
+}
+
+static struct super_operations simplefs_super_ops = {
+    .put_super = simplefs_put_super,
+    .alloc_inode = simplefs_alloc_inode,
+    .destroy_inode = simplefs_destroy_inode,
+    .write_inode = simplefs_write_inode,
+    .sync_fs = simplefs_sync_fs,
+    .statfs = simplefs_statfs,
+};
+
 static const struct super_operations fs_super_operations = {
-    .alloc_inode     = alloc_inode,
-    .destroy_inode   = destroy_inode,
-    .dirty_inode     = dirty_inode,
-    .write_inode     = write_inode,
-    .drop_inode      = drop_inode,
-    .delete_inode    = delete_inode,
-    .put_super       = put_super,
-    .write_super     = write_super,
-    .sync_fs         = sync_fs,
-    .freeze_fs       = freeze_super,
-    .unfreeze_fs     = thaw_super,
-    .statfs          = default_statfs,
-    .remount_fs      = remount_fs,
-    .show_options    = generic_show_options,
-    .show_devname    = simple_show_devname,
-    .show_path       = simple_show_path,
-    .show_stats      = simple_show_stats,
+    .put_super = simplefs_put_super,
+    .alloc_inode = simplefs_alloc_inode,
+    .destroy_inode = simplefs_destroy_inode,
+    .write_inode = simplefs_write_inode,
+    .sync_fs = simplefs_sync_fs,
+    .statfs = simplefs_statfs,
 };
 
 static const struct inode_operations fs_inode_operations = {
