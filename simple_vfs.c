@@ -35,12 +35,12 @@ static const struct file_operations fs_file_operations = {
 
 static void simplefs_put_super(struct super_block *sb)
 {
-    struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
-    if (sbi) {
-        kfree(sbi->ifree_bitmap);
-        kfree(sbi->bfree_bitmap);
-        kfree(sbi);
-    }
+    // struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
+    // if (sbi) {
+    //     kfree(sbi->ifree_bitmap);
+    //     kfree(sbi->bfree_bitmap);
+    //     kfree(sbi);
+    // }
 }
 static struct inode *simplefs_alloc_inode(struct super_block *sb)
 {
