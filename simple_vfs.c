@@ -34,80 +34,80 @@ static const struct file_operations fs_file_operations = {
 };
 
 
-// Function to put the superblock
-static void simplefs_put_super(struct super_block *sb) {
-  // Cleanup and deallocation code for the superblock
-}
+// // Function to put the superblock
+// static void simplefs_put_super(struct super_block *sb) {
+//   // Cleanup and deallocation code for the superblock
+// }
 
-// Function to allocate an inode
-static struct inode *simplefs_alloc_inode(struct super_block *sb) {
-  // Allocation code for the inode
-  // Example:
-  struct inode *inode = new_inode(sb);
-  if (inode) {
-    // Initialize the inode
-  }
-  return inode;
-}
+// // Function to allocate an inode
+// static struct inode *simplefs_alloc_inode(struct super_block *sb) {
+//   // Allocation code for the inode
+//   // Example:
+//   struct inode *inode = new_inode(sb);
+//   if (inode) {
+//     // Initialize the inode
+//   }
+//   return inode;
+// }
 
-// Function to destroy an inode
-static void simplefs_destroy_inode(struct inode *inode) {
-  // Cleanup and deallocation code for the inode
-}
+// // Function to destroy an inode
+// static void simplefs_destroy_inode(struct inode *inode) {
+//   // Cleanup and deallocation code for the inode
+// }
 
-// Function to write inode to disk
-static int simplefs_write_inode(struct inode *inode, struct writeback_control *wbc) {
-  // Code to write the inode to disk
-  // Example:
-  struct super_block *sb = inode->i_sb;
-  struct simplefs_inode *sfs_inode = SIMPLEFS_INODE(inode);
-  struct buffer_head *bh;
+// // Function to write inode to disk
+// static int simplefs_write_inode(struct inode *inode, struct writeback_control *wbc) {
+//   // Code to write the inode to disk
+//   // Example:
+//   struct super_block *sb = inode->i_sb;
+//   struct simplefs_inode *sfs_inode = SIMPLEFS_INODE(inode);
+//   struct buffer_head *bh;
 
-  // Get the buffer head for the inode's block
-  bh = sb_bread(sb, sfs_inode->block_no);
-  if (!bh)
-    return -EIO;
+//   // Get the buffer head for the inode's block
+//   bh = sb_bread(sb, sfs_inode->block_no);
+//   if (!bh)
+//     return -EIO;
 
-  // Update the inode data in the buffer
-  memcpy(bh->b_data, sfs_inode, sizeof(struct simplefs_inode));
+//   // Update the inode data in the buffer
+//   memcpy(bh->b_data, sfs_inode, sizeof(struct simplefs_inode));
 
-  // Mark the buffer as dirty
-  mark_buffer_dirty(bh);
+//   // Mark the buffer as dirty
+//   mark_buffer_dirty(bh);
 
-  // Release the buffer head
-  brelse(bh);
+//   // Release the buffer head
+//   brelse(bh);
 
-  // Return success
-  return 0;
-}
+//   // Return success
+//   return 0;
+// }
 
-// Function to sync the filesystem
-static int simplefs_sync_fs(struct super_block *sb, int wait) {
-  // Code to sync the filesystem
-  // Example:
-  // Perform necessary sync operations and return success
-  return 0;
-}
+// // Function to sync the filesystem
+// static int simplefs_sync_fs(struct super_block *sb, int wait) {
+//   // Code to sync the filesystem
+//   // Example:
+//   // Perform necessary sync operations and return success
+//   return 0;
+// }
 
-// Function to get filesystem statistics
-static int simplefs_statfs(struct dentry *dentry, struct kstatfs *buf) {
-  // Code to retrieve filesystem statistics
-  // Example:
-  struct super_block *sb = dentry->d_sb;
-  struct simplefs_super_block *sfs_sb = sb->s_fs_info;
+// // Function to get filesystem statistics
+// static int simplefs_statfs(struct dentry *dentry, struct kstatfs *buf) {
+//   // Code to retrieve filesystem statistics
+//   // Example:
+//   struct super_block *sb = dentry->d_sb;
+//   struct simplefs_super_block *sfs_sb = sb->s_fs_info;
 
-  // Populate the kstatfs structure with the filesystem statistics
-  buf->f_type = sb->s_magic;
-  buf->f_bsize = sb->s_blocksize;
-  buf->f_blocks = sfs_sb->total_blocks;
-  buf->f_bfree = sfs_sb->free_blocks;
-  buf->f_bavail = sfs_sb->free_blocks;
+//   // Populate the kstatfs structure with the filesystem statistics
+//   buf->f_type = sb->s_magic;
+//   buf->f_bsize = sb->s_blocksize;
+//   buf->f_blocks = sfs_sb->total_blocks;
+//   buf->f_bfree = sfs_sb->free_blocks;
+//   buf->f_bavail = sfs_sb->free_blocks;
 
-  // Set other relevant fields as needed
+//   // Set other relevant fields as needed
 
-  // Return success
-  return 0;
-}
+//   // Return success
+//   return 0;
+// }
 
 static const struct super_operations fs_super_operations = {
     // .put_super = simplefs_put_super,
