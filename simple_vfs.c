@@ -222,11 +222,17 @@ static struct dentry *fs_mount(struct file_system_type *fs_type, int flags, cons
     struct dentry *entry;
     struct fs_data *fs_data;
 
+    printk("mount_nodev start");
+
     entry = mount_nodev(fs_type, flags, data, fs_fill_super);
     if (IS_ERR(entry)) {
         pr_err("Failed to mount the custom file system\n");
         return entry;
     }
+
+    printk("mount_nodev finish");
+
+    printk("kzalloc start");
 
     fs_data = kzalloc(sizeof(struct fs_data), GFP_KERNEL);
     if (!fs_data) {
@@ -236,6 +242,8 @@ static struct dentry *fs_mount(struct file_system_type *fs_type, int flags, cons
 
     fs_data->sb = entry->d_sb->s_fs_info;
     entry->d_sb->s_fs_info = fs_data;
+
+    printk("kzalloc finsih");
     
     if (fs_create_calc_directory(entry) != 0) // create /calc dir
         goto out_fail;
@@ -257,13 +265,13 @@ out_fail:
 
 static void fs_kill_super(struct super_block *sb)
 {
-    // struct fs_data *fs_data = sb->s_fs_info;
+    struct fs_data *fs_data = sb->s_fs_info;
 
-    // kill_block_super(sb);
+    kill_block_super(sb);
 
-    // pr_info("Unmounted disk\n");
+    pr_info("Unmounted disk\n");
 
-    // kfree(fs_data);
+    kfree(fs_data);
 }
 
 static struct file_system_type fs_type = {
