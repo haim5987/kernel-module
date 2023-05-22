@@ -16,6 +16,7 @@
 static const struct address_space_operations fs_aops;
 static const struct inode_operations fs_inode_operations;
 static const struct dentry_operations custom_fs_dentry_operations;
+struct super_block *sb;
 
 struct fs_extent {
     uint32_t ee_block; /* first logical block extent covers */
@@ -58,12 +59,12 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
 
     printk("sb start");
     sb->s_magic = FILE_SYSTEM_MAGIC;
-    // printk("sb->s_magic finish");
-    // sb_set_blocksize(sb, BLOCK_SIZE);
-    // printk("sb_set_blocksize finish");
-    // sb->s_maxbytes = MAX_FILESIZE;
-    // printk("sb->s_maxbytes finish");
-    // sb->s_op = &fs_super_operations;
+    printk("sb->s_magic finish");
+    sb_set_blocksize(sb, BLOCK_SIZE);
+    printk("sb_set_blocksize finish");
+    sb->s_maxbytes = MAX_FILESIZE;
+    printk("sb->s_maxbytes finish");
+    sb->s_op = &fs_super_operations;
 
     printk("sb finish");
     printk("root_inode start");
