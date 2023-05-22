@@ -34,8 +34,23 @@ static const struct file_operations fs_file_operations = {
 };
 
 static const struct super_operations fs_super_operations = {
-    .statfs = default_statfs,
-    // .drop_inode = generic_delete_inode,
+    .alloc_inode     = alloc_inode,
+    .destroy_inode   = destroy_inode,
+    .dirty_inode     = dirty_inode,
+    .write_inode     = write_inode,
+    .drop_inode      = drop_inode,
+    .delete_inode    = delete_inode,
+    .put_super       = put_super,
+    .write_super     = write_super,
+    .sync_fs         = sync_fs,
+    .freeze_fs       = freeze_super,
+    .unfreeze_fs     = thaw_super,
+    .statfs          = default_statfs,
+    .remount_fs      = remount_fs,
+    .show_options    = generic_show_options,
+    .show_devname    = simple_show_devname,
+    .show_path       = simple_show_path,
+    .show_stats      = simple_show_stats,
 };
 
 static const struct inode_operations fs_inode_operations = {
