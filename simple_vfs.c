@@ -58,8 +58,11 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
 
     printk("sb start");
     sb->s_magic = FILE_SYSTEM_MAGIC;
+    printk("sb->s_magic finish");
     sb_set_blocksize(sb, BLOCK_SIZE);
+    printk("sb_set_blocksize finish");
     sb->s_maxbytes = MAX_FILESIZE;
+    printk("sb->s_maxbytes finish");
     sb->s_op = &fs_super_operations;
 
     printk("sb finish");
