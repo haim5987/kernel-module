@@ -17,7 +17,7 @@ static const struct address_space_operations fs_aops;
 static const struct inode_operations fs_inode_operations;
 static const struct dentry_operations custom_fs_dentry_operations;
 
-struct simplefs_extent {
+struct fs_extent {
     uint32_t ee_block; /* first logical block extent covers */
     uint32_t ee_len;   /* number of blocks covered by extent */
     uint32_t ee_start; /* first physical block extent covers */
