@@ -145,8 +145,8 @@ static int simplefs_sync_fs(struct super_block *sb, int wait)
         if (!bh)
             return -EIO;
 
-        memcpy(bh->b_data, (void *) sbi->ifree_bitmap + i * SIMPLEFS_BLOCK_SIZE,
-               SIMPLEFS_BLOCK_SIZE);
+        memcpy(bh->b_data, (void *) sbi->ifree_bitmap + i * BLOCK_SIZE,
+               BLOCK_SIZE);
 
         mark_buffer_dirty(bh);
         if (wait)
@@ -162,8 +162,8 @@ static int simplefs_sync_fs(struct super_block *sb, int wait)
         if (!bh)
             return -EIO;
 
-        memcpy(bh->b_data, (void *) sbi->bfree_bitmap + i * SIMPLEFS_BLOCK_SIZE,
-               SIMPLEFS_BLOCK_SIZE);
+        memcpy(bh->b_data, (void *) sbi->bfree_bitmap + i * BLOCK_SIZE,
+               BLOCK_SIZE);
 
         mark_buffer_dirty(bh);
         if (wait)
@@ -179,14 +179,14 @@ static int simplefs_statfs(struct dentry *dentry, struct kstatfs *stat)
     struct super_block *sb = dentry->d_sb;
     struct simplefs_sb_info *sbi = SIMPLEFS_SB(sb);
 
-    stat->f_type = SIMPLEFS_MAGIC;
-    stat->f_bsize = SIMPLEFS_BLOCK_SIZE;
+    stat->f_type = FILE_SYSTEM_MAGIC;
+    stat->f_bsize = BLOCK_SIZE;
     stat->f_blocks = sbi->nr_blocks;
     stat->f_bfree = sbi->nr_free_blocks;
     stat->f_bavail = sbi->nr_free_blocks;
     stat->f_files = sbi->nr_inodes - sbi->nr_free_inodes;
     stat->f_ffree = sbi->nr_free_inodes;
-    stat->f_namelen = SIMPLEFS_FILENAME_LEN;
+    stat->f_namelen = 255;
 
     return 0;
 }
