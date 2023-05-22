@@ -256,11 +256,12 @@ static struct dentry *fs_mount(struct file_system_type *fs_type, int flags, cons
     if (fs_create_calc_directory(entry) != 0) // create /calc dir
         goto out_fail;
      printk("fs_create_calc_directory finsih");
-   
+    
+    printk("fs_create_hello_file start");
     if (fs_create_hello_file(entry->d_sb->s_root) != 0) // create hello.txt file
         goto out_fail;
 
-   
+    printk("fs_create_hello_file finsih");
     if (fs_create_fib_num_file(entry->d_sb->s_root) != 0) // create /calc/fib.num file
         goto out_fail;
 
