@@ -252,10 +252,10 @@ static struct dentry *fs_mount(struct file_system_type *fs_type, int flags, cons
     entry->d_sb->s_fs_info = fs_data;
 
     printk("kzalloc finsih");
-    
+    printk("fs_create_calc_directory start");
     if (fs_create_calc_directory(entry) != 0) // create /calc dir
         goto out_fail;
-
+     printk("fs_create_calc_directory finsih");
    
     if (fs_create_hello_file(entry->d_sb->s_root) != 0) // create hello.txt file
         goto out_fail;
