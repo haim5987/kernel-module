@@ -228,13 +228,13 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
     struct inode *root_inode;
     struct fs_data *fs_data;
 
-    // Allocate memory for the superblock
-    sb = alloc_super();
+    // // Allocate memory for the superblock
+    // sb = alloc_super();
 
-    if (!sb) {
-        // Handle memory allocation failure
-        return -ENOMEM;
-    }
+    // if (!sb) {
+    //     // Handle memory allocation failure
+    //     return -ENOMEM;
+    // }
 
     printk("sb start");
     sb->s_magic = FILE_SYSTEM_MAGIC;
