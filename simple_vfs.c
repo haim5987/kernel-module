@@ -257,13 +257,13 @@ out_fail:
 
 static void fs_kill_super(struct super_block *sb)
 {
-    // struct fs_data *fs_data = sb->s_fs_info;
+    struct fs_data *fs_data = sb->s_fs_info;
 
-    // kill_block_super(sb);
+    kill_block_super(sb);
 
-    // pr_info("Unmounted disk\n");
+    pr_info("Unmounted disk\n");
 
-    // kfree(fs_data);
+    kfree(fs_data);
 }
 
 static struct file_system_type fs_type = {
