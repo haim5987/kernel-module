@@ -56,12 +56,13 @@ static int fs_fill_super(struct super_block *sb, void *data, int silent)
     struct inode *root_inode;
     struct fs_data *fs_data;
 
+    printk("sb start");
     sb->s_magic = FILE_SYSTEM_MAGIC;
     sb_set_blocksize(sb, BLOCK_SIZE);
     sb->s_maxbytes = MAX_FILESIZE;
     sb->s_op = &fs_super_operations;
 
-
+    printk("sb finish");
     printk("root_inode start");
     root_inode = new_inode(sb);
     if (!root_inode)
